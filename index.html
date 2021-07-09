@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title>Form</title>
+	<link rel="stylesheet" href="jquery.formstyler.css">
+	<link rel="stylesheet" href="style.css">
+</head>
+<body>
+	<div class="container">
+		<form action="mail.php" enctype="multipart/form-data" class="form" method="POST">    
+			<!--указываем адрес почты для отправки-->    
+			<input type="hidden" name="admin_email[]" value="burim2002@mail.ru">
+			<input type="hidden" name="form_subject" value="Тема письма">
+			<h1>Калькулятор конвертации валюты</h1>
+			<label class="form__input">
+				<!--ввод суммы в рублях-->
+				<span>Сумма, руб</span>
+				<input type="text" name="Сумма">
+			</label>
+			<label class="form__input">
+				<!--селектор валют-->
+				<span>Валюта для конвертации</span>
+				<select name="curr">
+					<option value="EUR">EUR</option>
+					<option value="USD">USD</option>
+					<option value="GBP">GBP</option>
+				</select>
+			</label>
+			<label class="form__input">
+				<span>Сумма в валюте</span>
+				<!--делаем поле нередактируемым-->
+				<input type="text" readonly name="Сумма в валюте"> 
+			</label>
+
+			<label class="form__input">
+				<!--поле для ввода email-->
+				<span>Email</span>
+				<input type="email" data-validate-field="email" name="email">
+			</label>
+			<input class="form__button" type="submit" value="Записаться на обмен валюты">
+			
+		</form>
+	</div>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+	<script src="jquery.inputmask.min.js"></script>
+	<script src="jquery.formstyler.min.js"></script>
+	<script src="jquery.validate.min.js"></script>
+	<script>
+
+		$(document).ready(function(){
+			$('input[type="email"]').inputmask({ "mask": "{1,20}@{1,20}.{3}[.{2}]" });
+						
+			$('select').styler();
+
+			//валидация формы
+
+
+			$('form').each(function () {
+				$(this).validate({
+					errorPlacement(error, element) {
+						return true;
+					},
+					focusInvalid: false,
+					rules: {
+						email: {
+							required: true,
+						},
+						Сумма: {
+							required: true,
+						}
+					},
+					messages: {
+						email: {
+							required: 'Нужно что-то ввести'
+						},
+						Сумма: {
+							required: 'Нужно что-то ввести',
+							
+						}
+					},
+					submitHandler(form) {
+					let th = $(form);
+
+					$.ajax({
+					type: 'POST',
+					url: 'mail.php',
+					data: th.serialize(),
+					// eslint-disable-next-line func-names
+				}).done(() => {
+
+					th.trigger('reset');
+				});
+
+				return false;
+				}
+			});
+			});
+		});
+
+		
+
+	</script>
+</body>
+</html>
